@@ -3,16 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Ubicaciones Cercanas (Optimizado y Corregido)</title>
+    <title>Mapa de Ubicaciones Cercanas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        #map { height: 60vh; width: 100%; border-radius: .5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1); }
+        #map { 
+            height: 60vh; 
+            width: 100%; 
+            border-radius: .5rem; 
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1), 
+                        0 2px 4px -2px rgb(0 0 0 / .1); 
+        }
         body { font-family: 'Inter', sans-serif; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width:20px; height:20px; background:#2563eb; cursor:pointer; border-radius:50%; }
-        input[type=range]::-moz-range-thumb { width:20px; height:20px; background:#2563eb; cursor:pointer; border-radius:50%; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            cursor: pointer;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -24,16 +43,30 @@
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Panel lateral -->
+        <!-- Panel de búsqueda -->
         <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4">Buscar Dirección</h2>
             <div class="relative mb-4">
-                <input id="search-input" type="text" placeholder="Escribe una calle, ciudad o código postal..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                <svg class="w-5 h-5 text-gray-400 absolute top-3.5 right-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                <input id="search-input"
+                       type="text"
+                       placeholder="Escribe una calle, ciudad o código postal..."
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"/>
+                <svg class="w-5 h-5 text-gray-400 absolute top-3.5 right-3"
+                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                </svg>
             </div>
             <div class="mb-6">
-                <label for="radius-slider" class="block text-sm font-medium text-gray-700">Radio de búsqueda: <span id="radius-value" class="font-bold text-blue-600">2 km</span></label>
-                <input id="radius-slider" type="range" min="1" max="20" value="2" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                <label for="radius-slider"
+                       class="block text-sm font-medium text-gray-700">
+                    Radio de búsqueda:
+                    <span id="radius-value" class="font-bold text-blue-600">2 km</span>
+                </label>
+                <input id="radius-slider"
+                       type="range" min="1" max="20" value="2"
+                       class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer"/>
             </div>
             <div id="results-list">
                 <h3 class="text-xl font-semibold mb-2">Resultados</h3>
@@ -42,6 +75,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Mapa -->
         <div class="lg:col-span-2">
             <div id="map"></div>
@@ -51,13 +85,14 @@
 
 <!-- Google Maps API -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnrohr8YoLHfUDoFUUOpQ8Wb4W_n2Hirs&libraries=places,geometry&callback=initMap" async defer></script>
+
 <script>
     let map;
     let allLocations = [];
     let visibleMarkers = [];
     let searchMarker;
     let lastSearchedLocation;
-    let infoWindow; // inicializar más tarde
+    let infoWindow;
 
     function initMap() {
         const initialCoords = { lat: -34.6037, lng: -58.3816 };
@@ -66,9 +101,9 @@
             zoom: 12,
             mapTypeControl: false,
             streetViewControl: false,
-            styles: [ /* estilos aquí */ ]
+            styles: []
         });
-        infoWindow = new google.maps.InfoWindow(); // se crea aquí, tras carga de API
+        infoWindow = new google.maps.InfoWindow();
 
         loadLocations();
         setupUIListeners();
@@ -76,19 +111,22 @@
 
     async function loadLocations() {
         try {
-            const res = await fetch('locations.json');
-            if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-            allLocations = await res.json();
+            const response = await fetch('locations.json');
+            if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+            allLocations = await response.json();
+
             map.addListener('idle', updateVisibleMarkers);
             updateVisibleMarkers();
-        } catch (e) {
-            console.error('Error cargando ubicaciones:', e);
+        } catch (error) {
+            console.error('Error cargando ubicaciones:', error);
         }
     }
 
     function setupUIListeners() {
-        const input = document.getElementById('search-input');
-        const autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'], componentRestrictions: { country: 'ar' } });
+        const autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('search-input'),
+            { types: ['geocode'], componentRestrictions: { country: 'ar' } }
+        );
         autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
             if (place.geometry) handleSearch(place.geometry.location);
@@ -101,65 +139,118 @@
     }
 
     function updateVisibleMarkers() {
-        visibleMarkers.forEach(m => m.setMap(null));
+        visibleMarkers.forEach(marker => marker.setMap(null));
         visibleMarkers = [];
-        const bounds = map.getBounds(); if (!bounds) return;
+
+        const bounds = map.getBounds();
+        if (!bounds) return;
 
         allLocations.forEach(loc => {
-            const pos = new google.maps.LatLng(loc.lat, loc.lng);
-            if (bounds.contains(pos)) {
-                const marker = new google.maps.Marker({ position: pos, map, title: loc.name });
-                marker.addListener('click', () => {
-                    infoWindow.setContent(`<div class="p-2"><h4 class="font-bold">${loc.name}</h4><p>${loc.address}</p><p>${loc.phone}</p></div>`);
-                    infoWindow.open(map, marker);
+            const position = new google.maps.LatLng(loc.lat, loc.lng);
+            if (bounds.contains(position)) {
+                const marker = new google.maps.Marker({
+                    position,
+                    map,
+                    title: loc.name
                 });
+                marker.addListener('click', () => showInfoWindow(loc, marker));
                 visibleMarkers.push(marker);
             }
         });
-        console.log(`Marcadores mostrados: ${visibleMarkers.length}/${allLocations.length}`);
     }
 
-    function handleSearch(latlng) {
+    function showInfoWindow(loc, marker) {
+        const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
+        const wazeUrl = `https://waze.com/ul?ll=${loc.lat},${loc.lng}&navigate=yes`;
+        infoWindow.setContent(
+            `<div class="p-2">
+                <h4 class="font-bold text-md">${loc.name}</h4>
+                <p class="text-sm text-gray-600">${loc.address}</p>
+                <p class="text-sm text-gray-600">${loc.phone}</p>
+                <div class="mt-2 flex space-x-4">
+                    <a href="${googleUrl}" target="_blank" class="text-blue-600 underline">Google Maps</a>
+                    <a href="${wazeUrl}" target="_blank" class="text-blue-600 underline">Waze</a>
+                </div>
+            </div>`
+        );
+        infoWindow.open(map, marker);
+    }
+
+    function handleSearch(location) {
         if (searchMarker) searchMarker.setMap(null);
-        searchMarker = new google.maps.Marker({ position: latlng, map, title: 'Tu búsqueda' });
-        map.panTo(latlng); map.setZoom(14);
-        lastSearchedLocation = latlng;
-        findAndDisplayNearest(latlng);
+        searchMarker = new google.maps.Marker({
+            position: location,
+            map,
+            title: 'Tu búsqueda'
+        });
+        map.panTo(location);
+        map.setZoom(14);
+        lastSearchedLocation = location;
+        findAndDisplayNearest(location);
     }
 
     function findAndDisplayNearest(center) {
-        const radius = +document.getElementById('radius-slider').value * 1000;
-        const nearby = allLocations.map(loc => {
-            const pos = new google.maps.LatLng(loc.lat, loc.lng);
-            return { ...loc, distance: google.maps.geometry.spherical.computeDistanceBetween(center, pos) };
-        }).filter(l => l.distance <= radius)
-          .sort((a,b) => a.distance - b.distance);
-        displayResults(nearby);
+        const radiusMeters = document.getElementById('radius-slider').value * 1000;
+        const results = allLocations.map(loc => ({
+            ...loc,
+            distance: google.maps.geometry.spherical.computeDistanceBetween(
+                center,
+                new google.maps.LatLng(loc.lat, loc.lng)
+            )
+        }))
+        .filter(loc => loc.distance <= radiusMeters)
+        .sort((a, b) => a.distance - b.distance);
+
+        displayResults(results);
     }
 
-    function displayResults(arr) {
-        const container = document.getElementById('results-content');
-        container.innerHTML = '';
-        if (!arr.length) {
-            container.innerHTML = '<p>No se encontraron sucursales en el radio seleccionado.</p>';
+    function displayResults(locations) {
+        const resultsContent = document.getElementById('results-content');
+        resultsContent.innerHTML = '';
+
+        if (!locations.length) {
+            resultsContent.innerHTML = '<p>No se encontraron sucursales en el radio seleccionado.</p>';
             return;
         }
 
-        const ul = document.createElement('ul'); ul.className = 'space-y-4';
-        arr.forEach(loc => {
-            const li = document.createElement('li');
-            li.className = 'p-4 border rounded-lg hover:bg-gray-100 cursor-pointer';
-            const distKm = (loc.distance/1000).toFixed(2);
-            li.innerHTML = `<div class="flex justify-between"><div><h4 class="font-semibold">${loc.name}</h4><p class="text-sm">${loc.address}</p></div><div><span class="font-bold text-blue-600">${distKm} km</span></div></div>`;
-            li.addEventListener('click', () => {
-                map.panTo({ lat: loc.lat, lng: loc.lng }); map.setZoom(15);
-                const mk = visibleMarkers.find(m => m.getTitle()===loc.name);
-                if (mk) google.maps.event.trigger(mk, 'click');
+        const list = document.createElement('ul');
+        list.className = 'space-y-4';
+
+        locations.forEach(loc => {
+            const distKm = (loc.distance / 1000).toFixed(2);
+            const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`;
+            const wazeUrl = `https://waze.com/ul?ll=${loc.lat},${loc.lng}&navigate=yes`;
+
+            const item = document.createElement('li');
+            item.className = 'p-4 border rounded-lg hover:bg-gray-100 cursor-pointer';
+            item.innerHTML =
+                `<div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="font-semibold">${loc.name}</h4>
+                        <p class="text-sm text-gray-500">${loc.address}</p>
+                    </div>
+                    <div><span class="font-bold text-blue-600">${distKm} km</span></div>
+                </div>
+                <div class="mt-2 flex space-x-4">
+                    <a href="${googleUrl}" target="_blank" class="text-blue-600 underline">Directions (Google Maps)</a>
+                    <a href="${wazeUrl}" target="_blank" class="text-blue-600 underline">Directions (Waze)</a>
+                </div>`;
+
+            item.addEventListener('click', () => {
+                map.panTo({ lat: loc.lat, lng: loc.lng });
+                map.setZoom(15);
+                const marker = visibleMarkers.find(m => m.getTitle() === loc.name);
+                if (marker) google.maps.event.trigger(marker, 'click');
             });
-            ul.appendChild(li);
+
+            list.appendChild(item);
         });
-        container.appendChild(ul);
+
+        resultsContent.appendChild(list);
     }
+
+    window.initMap = initMap;
 </script>
+
 </body>
 </html>
