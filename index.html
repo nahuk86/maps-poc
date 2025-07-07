@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Ubicaciones Cercanas</title>
+    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo para el contenedor del mapa para que ocupe el espacio disponible */
+        #map {
+            height: 60vh;
+            width: 100%;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+
+        <!-- Encabezado -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Encuentra Nuestras Sucursales</h1>
+            <p class="mt-2 text-lg text-gray-600">Busca una dirección y te mostraremos las más cercanas a ti.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Columna de Búsqueda y Resultados -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Buscar Dirección</h2>
+                <!-- Input de búsqueda -->
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Escribe una calle, ciudad o código postal..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <svg class="w-5 h-5 text-gray-400 absolute top-3.5 right-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </div>
+
+                <!-- Lista de resultados -->
+                <div id="results-list" class="mt-6">
+                    <h3 class="text-xl font-semibold mb-2">Resultados</h3>
+                    <div id="results-content" class="space-y-3 text-gray-600">
+                        <p>Realiza una búsqueda para ver las sucursales más cercanas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna del Mapa -->
+            <div class="lg:col-span-2">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archivo JSON de ejemplo (puedes moverlo a un archivo externo `locations.json`) -->
+    <script id="locations-data" type="application/json">
+    [
+      {
+        "name": "Sucursal Central",
+        "address": "Av. Corrientes 1234, CABA",
+        "lat": -34.6037,
+        "lng": -58.3816,
+        "phone": "+54 11 4123-4567"
+      },
+      {
+        "name": "Sucursal Palermo",
+        "address": "Av. Santa Fe 3456, Palermo, CABA",
+        "lat": -34.5885,
+        "lng": -58.4113,
+        "phone": "+54 11 4825-8899"
+      },
+      {
+        "name": "Sucursal Belgrano",
+        "address": "Av. Cabildo 2000, Belgrano, CABA",
+        "lat": -34.5610,
+        "lng": -58.4573,
+        "phone": "+54 11 4788-1234"
+      },
+      {
+        "name": "Sucursal Caballito",
+        "address": "Av. Rivadavia 5000, Caballito, CABA",
+        "lat": -34.6179,
+        "lng": -58.4398,
+        "phone": "+54 11 4901-5678"
+      },
+      {
+        "name": "Sucursal San Isidro",
+        "address": "Av. del Libertador 15000, San Isidro, GBA",
+        "lat": -34.4842,
+        "lng": -58.5133,
+        "phone": "+54 11 4747-9900"
+      }
+    ]
+    </script>
+
+    <!-- Script de Google Maps API -->
+    <!-- IMPORTANTE: Reemplaza "YOUR_API_KEY" con tu clave de API de Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9X5m0Jz_jORc3Q79ouDdh11WZ6h2n39s&libraries=places&callback=initMap" async defer></script>
+
+    <script>
+        let map;
+        let markers = [];
+        let locations = [];
+        let searchMarker;
+
+        // Función principal que inicializa el mapa y la funcionalidad
+        function initMap() {
+            // Coordenadas iniciales (centrado en Buenos Aires)
+            const initialCoords = { lat: -34.6037, lng: -58.3816 };
+
+            // Crear la instancia del mapa
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: initialCoords,
+                mapTypeControl: false,
+                streetViewControl: false,
+                styles: [ // Estilo de mapa sutil
+                    { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] },
+                    { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+                    { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+                    { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
+                    { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] },
+                    { featureType: "poi", elementType: "geometry", stylers: [{ color: "#eeeeee" }] },
+                    { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+                    { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] },
+                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+                    { featureType: "road.arterial", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+                    { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#dadada" }] },
+                    { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+                    { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] },
+                    { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] },
+                    { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#eeeeee" }] },
+                    { featureType: "water", elementType: "geometry", stylers: [{ color: "#c9c9c9" }] },
+                    { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] },
+                ],
+            });
+
+            // Cargar las ubicaciones desde el JSON
+            loadLocations();
+
+            // Configurar el autocompletado de búsqueda
+            const searchInput = document.getElementById("search-input");
+            const autocomplete = new google.maps.places.Autocomplete(searchInput, {
+                types: ["geocode"],
+                componentRestrictions: { country: "ar" } // Restringir a Argentina
+            });
+
+            // Listener para cuando se selecciona un lugar del autocompletado
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (place.geometry && place.geometry.location) {
+                    handleSearch(place.geometry.location);
+                }
+            });
+        }
+
+        // Carga las ubicaciones del JSON y las añade al mapa
+        function loadLocations() {
+            const locationsDataElement = document.getElementById('locations-data');
+            // En un caso real, podrías usar fetch('locations.json')
+            locations = JSON.parse(locationsDataElement.textContent);
+
+            const infoWindow = new google.maps.InfoWindow();
+
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.name,
+                    icon: { // Icono personalizado para las sucursales
+                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                    }
+                });
+
+                // Crear contenido para la ventana de información (InfoWindow)
+                const contentString = `
+                    <div class="p-2">
+                        <h4 class="font-bold text-md">${location.name}</h4>
+                        <p class="text-sm text-gray-600">${location.address}</p>
+                        <p class="text-sm text-gray-600">${location.phone}</p>
+                    </div>`;
+
+                marker.addListener("click", () => {
+                    infoWindow.setContent(contentString);
+                    infoWindow.open(map, marker);
+                });
+
+                markers.push(marker);
+            });
+        }
+
+        // Maneja la lógica de búsqueda
+        function handleSearch(location) {
+            // Eliminar marcador de búsqueda anterior si existe
+            if (searchMarker) {
+                searchMarker.setMap(null);
+            }
+
+            // Añadir un nuevo marcador para la ubicación buscada
+            searchMarker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Tu búsqueda",
+                icon: { // Icono personalizado para la búsqueda
+                    url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                }
+            });
+
+            // Centrar el mapa en la nueva búsqueda
+            map.panTo(location);
+            map.setZoom(14);
+
+            // Calcular y mostrar las sucursales más cercanas
+            findAndDisplayNearest(location);
+        }
+
+        // Calcula la distancia y muestra los resultados
+        function findAndDisplayNearest(searchLatLng) {
+            // Calcular la distancia desde la búsqueda a cada sucursal
+            const locationsWithDistance = locations.map(location => {
+                const locationLatLng = new google.maps.LatLng(location.lat, location.lng);
+                const distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(searchLatLng, locationLatLng);
+                return { ...location, distance: distanceInMeters };
+            });
+
+            // Ordenar las sucursales por distancia (de menor a mayor)
+            locationsWithDistance.sort((a, b) => a.distance - b.distance);
+
+            // Actualizar la lista de resultados en el DOM
+            displayResults(locationsWithDistance);
+        }
+
+        // Renderiza la lista de resultados en el panel izquierdo
+        function displayResults(sortedLocations) {
+            const resultsContent = document.getElementById("results-content");
+            resultsContent.innerHTML = ""; // Limpiar resultados anteriores
+
+            if (sortedLocations.length === 0) {
+                resultsContent.innerHTML = "<p>No se encontraron sucursales.</p>";
+                return;
+            }
+
+            const list = document.createElement("ul");
+            list.className = "space-y-4";
+
+            sortedLocations.forEach(location => {
+                const item = document.createElement("li");
+                item.className = "p-4 border rounded-lg hover:bg-gray-100 cursor-pointer transition";
+                
+                const distanceKm = (location.distance / 1000).toFixed(2);
+
+                item.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-semibold text-gray-800">${location.name}</h4>
+                            <p class="text-sm text-gray-500">${location.address}</p>
+                        </div>
+                        <div class="text-right">
+                             <span class="font-bold text-blue-600">${distanceKm} km</span>
+                        </div>
+                    </div>
+                `;
+
+                // Al hacer clic en un resultado, centrar el mapa en esa sucursal
+                item.addEventListener("click", () => {
+                    const position = { lat: location.lat, lng: location.lng };
+                    map.panTo(position);
+                    map.setZoom(15);
+                    // Opcional: abrir el infoWindow del marcador correspondiente
+                    const correspondingMarker = markers.find(m => m.getTitle() === location.name);
+                    if (correspondingMarker) {
+                        google.maps.event.trigger(correspondingMarker, 'click');
+                    }
+                });
+
+                list.appendChild(item);
+            });
+
+            resultsContent.appendChild(list);
+        }
+
+        // Iniciar todo cuando la ventana se cargue
+        window.initMap = initMap;
+    </script>
+
+</body>
+</html>
