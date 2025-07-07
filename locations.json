@@ -1,0 +1,198 @@
+[
+  {
+    "name": "Vacunatorio UC CHRISTUS - Centro Médico San Joaquín",
+    "address": "Av. Vicuña Mackenna 4686, San Joaquín, Santiago",
+    "lat": -33.4988,
+    "lng": -70.6134,
+    "phone": "+56 2 2354 3000"
+  },
+  {
+    "name": "Vacunatorio UC CHRISTUS - Clínica San Carlos de Apoquindo",
+    "address": "Camino El Alba 12351, Las Condes, Santiago",
+    "lat": -33.3995,
+    "lng": -70.5052,
+    "phone": "+56 2 2754 8700"
+  },
+  {
+    "name": "Vacunatorio Clínica Alemana - Vitacura",
+    "address": "Av. Vitacura 5951, Vitacura, Santiago",
+    "lat": -33.3895,
+    "lng": -70.5608,
+    "phone": "+56 2 2210 1111"
+  },
+  {
+    "name": "Vacunatorio Clínica Alemana - La Dehesa",
+    "address": "Av. José Alcalde Délano 12205, Lo Barnechea, Santiago",
+    "lat": -33.3644,
+    "lng": -70.5146,
+    "phone": "+56 2 2910 7000"
+  },
+  {
+    "name": "Vacunatorio Clínica Las Condes",
+    "address": "Lo Fontecilla 441, Las Condes, Santiago",
+    "lat": -33.4001,
+    "lng": -70.5486,
+    "phone": "+56 2 2210 4000"
+  },
+  {
+    "name": "Vacunatorio Clínica Dávila",
+    "address": "Av. Recoleta 464, Recoleta, Santiago",
+    "lat": -33.4258,
+    "lng": -70.6401,
+    "phone": "+56 2 2270 2700"
+  },
+  {
+    "name": "Vacunatorio Clínica Santa María",
+    "address": "Av. Bellavista 0415, Providencia, Santiago",
+    "lat": -33.4328,
+    "lng": -70.6279,
+    "phone": "+56 2 2913 0000"
+  },
+  {
+    "name": "RedSalud Vitacura (ex-Clínica Tabancura)",
+    "address": "Av. Tabancura 1095, Vitacura, Santiago",
+    "lat": -33.3854,
+    "lng": -70.5367,
+    "phone": "+56 600 718 6000"
+  },
+  {
+    "name": "RedSalud Santiago (ex-Clínica Bicentenario)",
+    "address": "Av. Libertador Bernardo O'Higgins 4850, Estación Central, Santiago",
+    "lat": -33.4542,
+    "lng": -70.6973,
+    "phone": "+56 600 718 6000"
+  },
+  {
+    "name": "Vacunatorio Vacuclinic",
+    "address": "Monseñor Edwards 1025, La Reina, Santiago",
+    "lat": -33.4567,
+    "lng": -70.5484,
+    "phone": "+56 9 7789 2769"
+  },
+  {
+    "name": "CESFAM Dr. José Alvo",
+    "address": "Av. La Paz 860, Independencia, Santiago",
+    "lat": -33.4194,
+    "lng": -70.6508,
+    "phone": "+56 2 2575 8500"
+  },
+  {
+    "name": "CESFAM Padre Vicente Irarrázaval",
+    "address": "Alcalde M. de la Lastra 1881, Estación Central, Santiago",
+    "lat": -33.4667,
+    "lng": -70.7001,
+    "phone": "+56 2 2677 6800"
+  },
+  {
+    "name": "Hospital Clínico Universidad de Chile",
+    "address": "Av. Santos Dumont 999, Independencia, Santiago",
+    "lat": -33.4215,
+    "lng": -70.6493,
+    "phone": "+56 2 2978 8000"
+  },
+  {
+    "name": "CESFAM Dr. Aníbal Ariztía",
+    "address": "Pedro de Valdivia 3450, Ñuñoa, Santiago",
+    "lat": -33.4569,
+    "lng": -70.5962,
+    "phone": "+56 2 3249 5100"
+  },
+  {
+    "name": "CESFAM Viña del Mar",
+    "address": "Av. Libertad 1290, Viña del Mar, Valparaíso",
+    "lat": -33.0135,
+    "lng": -71.5516,
+    "phone": "+56 32 218 4500"
+  },
+  {
+    "name": "CESFAM Placeres",
+    "address": "Av. Matta 790, Cerro Placeres, Valparaíso",
+    "lat": -33.0452,
+    "lng": -71.5835,
+    "phone": "+56 32 293 9550"
+  },
+  {
+    "name": "CESFAM San Felipe El Real",
+    "address": "Maipú 252, San Felipe, Valparaíso",
+    "lat": -32.7505,
+    "lng": -70.7225,
+    "phone": "+56 34 259 3100"
+  },
+  {
+    "name": "CESFAM Ultraestación",
+    "address": "Gamero 398, Chillán, Ñuble",
+    "lat": -36.6115,
+    "lng": -72.1158,
+    "phone": "+56 42 220 7700"
+  },
+  {
+    "name": "CESFAM Violeta Parra",
+    "address": "Av. O'Higgins 777, Chillán, Ñuble",
+    "lat": -36.6022,
+    "lng": -72.0954,
+    "phone": "+56 42 243 3500"
+  },
+  {
+    "name": "CESFAM O'Higgins",
+    "address": "O'Higgins 2195, Concepción, Biobío",
+    "lat": -36.8368,
+    "lng": -73.0612,
+    "phone": "+56 41 220 6500"
+  },
+  {
+    "name": "CESFAM Lorenzo Arenas",
+    "address": "Avenida 21 de Mayo 2075, Concepción, Biobío",
+    "lat": -36.8091,
+    "lng": -73.0487,
+    "phone": "+56 41 230 7500"
+  },
+  {
+    "name": "Clínica Bupa Antofagasta",
+    "address": "Av. Gral. Bernardo O'Higgins 1951, Antofagasta",
+    "lat": -23.6664,
+    "lng": -70.4093,
+    "phone": "+56 55 246 8100"
+  },
+  {
+    "name": "CESFAM Central",
+    "address": "Uribe 739, Antofagasta",
+    "lat": -23.6521,
+    "lng": -70.4001,
+    "phone": "+56 55 288 8000"
+  },
+  {
+    "name": "CESFAM Dr. Antonio Varas",
+    "address": "Antonio Varas 989, Temuco, Araucanía",
+    "lat": -38.7423,
+    "lng": -72.5938,
+    "phone": "+56 45 220 7200"
+  },
+  {
+    "name": "CESFAM La Florida",
+    "address": "Avenida La Florida 990, La Serena, Coquimbo",
+    "lat": -29.9247,
+    "lng": -71.2291,
+    "phone": "+56 51 220 5500"
+  },
+  {
+    "name": "CESFAM Carlos Ibáñez del Campo",
+    "address": "Avenida Carlos Ibáñez del Campo 890, Linares, Maule",
+    "lat": -35.8368,
+    "lng": -71.5872,
+    "phone": "+56 73 256 4500"
+  },
+  {
+    "name": "Hospital de Puerto Montt",
+    "address": "Los Aromos 75, Puerto Montt, Los Lagos",
+    "lat": -41.4589,
+    "lng": -72.9691,
+    "phone": "+56 65 236 2000"
+  },
+  {
+    "name": "Hospital Clínico de Magallanes",
+    "address": "Av. Los Flamencos 01364, Punta Arenas, Magallanes",
+    "lat": -53.1365,
+    "lng": -70.8841,
+    "phone": "+56 61 229 1000"
+  }
+]

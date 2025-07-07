@@ -3,73 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Ubicaciones Cercanas</title>
-    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <title>Mapa de Ubicaciones Cercanas (Optimizado)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilo para el contenedor del mapa para que ocupe el espacio disponible */
-        #map {
-            height: 60vh;
-            width: 100%;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Estilo para el pulgar del slider */
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #2563eb; /* Color azul */
-            cursor: pointer;
-            border-radius: 50%;
-        }
-        input[type=range]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #2563eb;
-            cursor: pointer;
-            border-radius: 50%;
-        }
+        #map { height: 60vh; width: 100%; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        body { font-family: 'Inter', sans-serif; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #2563eb; cursor: pointer; border-radius: 50%; }
+        input[type=range]::-moz-range-thumb { width: 20px; height: 20px; background: #2563eb; cursor: pointer; border-radius: 50%; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
     <div class="container mx-auto p-4 md:p-8 max-w-6xl">
-
-        <!-- Encabezado -->
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Encuentra Nuestras Sucursales</h1>
             <p class="mt-2 text-lg text-gray-600">Busca una dirección y te mostraremos las más cercanas a ti.</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Columna de Búsqueda y Resultados -->
             <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-4">Buscar Dirección</h2>
-                <!-- Input de búsqueda -->
                 <div class="relative mb-4">
                     <input type="text" id="search-input" placeholder="Escribe una calle, ciudad o código postal..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    <svg class="w-5 h-5 text-gray-400 absolute top-3.5 right-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
+                    <svg class="w-5 h-5 text-gray-400 absolute top-3.5 right-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                 </div>
 
-                <!-- NUEVO: Slider para seleccionar el radio de búsqueda -->
                 <div class="mb-6">
                     <label for="radius-slider" class="block text-sm font-medium text-gray-700">Radio de búsqueda: <span id="radius-value" class="font-bold text-blue-600">2 km</span></label>
                     <input type="range" id="radius-slider" min="1" max="20" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                 </div>
 
-
-                <!-- Lista de resultados -->
                 <div id="results-list">
                     <h3 class="text-xl font-semibold mb-2">Resultados</h3>
                     <div id="results-content" class="space-y-3 text-gray-600">
@@ -77,36 +43,28 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Columna del Mapa -->
             <div class="lg:col-span-2">
                 <div id="map"></div>
             </div>
         </div>
     </div>
 
-    <!-- Archivo JSON de ejemplo -->
-    <script id="locations-data" type="application/json">
-    [
-      { "name": "Sucursal Central", "address": "Av. Corrientes 1234, CABA", "lat": -34.6037, "lng": -58.3816, "phone": "+54 11 4123-4567" },
-      { "name": "Sucursal Palermo", "address": "Av. Santa Fe 3456, Palermo, CABA", "lat": -34.5885, "lng": -58.4113, "phone": "+54 11 4825-8899" },
-      { "name": "Sucursal Belgrano", "address": "Av. Cabildo 2000, Belgrano, CABA", "lat": -34.5610, "lng": -58.4573, "phone": "+54 11 4788-1234" },
-      { "name": "Sucursal Caballito", "address": "Av. Rivadavia 5000, Caballito, CABA", "lat": -34.6179, "lng": -58.4398, "phone": "+54 11 4901-5678" },
-      { "name": "Sucursal San Isidro", "address": "Av. del Libertador 15000, San Isidro, GBA", "lat": -34.4842, "lng": -58.5133, "phone": "+54 11 4747-9900" }
-    ]
-    </script>
+    <!-- ELIMINADO: Ya no se incrusta el JSON aquí -->
 
     <!-- Script de Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnrohr8YoLHfUDoFUUOpQ8Wb4W_n2Hirs&libraries=places,geometry&callback=initMap" async defer></script>
 
     <script>
         let map;
-        let markers = [];
-        let locations = [];
+        let allLocations = []; // Contendrá TODAS las ubicaciones del JSON
+        let visibleMarkers = []; // Contendrá solo los marcadores visibles en el mapa
         let searchMarker;
-        let lastSearchedLocation; // NUEVO: Guardar la última ubicación buscada
+        let lastSearchedLocation;
+        const infoWindow = new google.maps.InfoWindow();
 
-        function initMap() {
+
+        // MODIFICADO: La función initMap ahora es asíncrona para usar await
+        async function initMap() {
             const initialCoords = { lat: -34.6037, lng: -58.3816 };
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 12,
@@ -115,9 +73,14 @@
                 streetViewControl: false,
                 styles: [ { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] }, { elementType: "labels.icon", stylers: [{ visibility: "off" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] }, { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#eeeeee" }] }, { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }, { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] }, { featureType: "road.arterial", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }, { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#dadada" }] }, { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] }, { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] }, { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] }, { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#eeeeee" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#c9c9c9" }] }, { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] }, ],
             });
+            
+            // Cargar ubicaciones desde el archivo externo
+            await loadLocations();
 
-            loadLocations();
+            // OPTIMIZACIÓN: Añadir un listener que se activa cuando el mapa deja de moverse
+            map.addListener('idle', updateVisibleMarkers);
 
+            // --- El resto de los listeners se mantienen igual ---
             const searchInput = document.getElementById("search-input");
             const autocomplete = new google.maps.places.Autocomplete(searchInput, { types: ["geocode"], componentRestrictions: { country: "ar" } });
             autocomplete.addListener("place_changed", () => {
@@ -127,88 +90,99 @@
                 }
             });
 
-            // NUEVO: Listener para el slider de radio
             const radiusSlider = document.getElementById('radius-slider');
-            const radiusValue = document.getElementById('radius-value');
             radiusSlider.addEventListener('input', (event) => {
-                radiusValue.textContent = `${event.target.value} km`;
-                // Si ya se hizo una búsqueda, re-filtrar los resultados
+                document.getElementById('radius-value').textContent = `${event.target.value} km`;
                 if (lastSearchedLocation) {
                     findAndDisplayNearest(lastSearchedLocation);
                 }
             });
         }
 
-        function loadLocations() {
-            const locationsDataElement = document.getElementById('locations-data');
-            locations = JSON.parse(locationsDataElement.textContent);
-            const infoWindow = new google.maps.InfoWindow();
-
-            locations.forEach(location => {
-                const marker = new google.maps.Marker({
-                    position: { lat: location.lat, lng: location.lng },
-                    map: map,
-                    title: location.name,
-                    icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }
-                });
-                const contentString = `<div class="p-2"><h4 class="font-bold text-md">${location.name}</h4><p class="text-sm text-gray-600">${location.address}</p><p class="text-sm text-gray-600">${location.phone}</p></div>`;
-                marker.addListener("click", () => {
-                    infoWindow.setContent(contentString);
-                    infoWindow.open(map, marker);
-                });
-                markers.push(marker);
-            });
+        // MODIFICADO: Carga de datos con fetch
+        async function loadLocations() {
+            try {
+                const response = await fetch('locations.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allLocations = await response.json();
+                console.log(`${allLocations.length} ubicaciones cargadas.`);
+            } catch (error) {
+                console.error("No se pudieron cargar las ubicaciones:", error);
+                // Opcional: Mostrar un mensaje de error al usuario en la UI
+            }
         }
 
+        // NUEVO: Función de optimización para mostrar solo marcadores en el área visible
+        function updateVisibleMarkers() {
+            // Limpiar marcadores antiguos
+            visibleMarkers.forEach(marker => marker.setMap(null));
+            visibleMarkers = [];
+
+            const bounds = map.getBounds();
+            if (!bounds) return; // Salir si el mapa aún no está listo
+
+            allLocations.forEach(location => {
+                const position = new google.maps.LatLng(location.lat, location.lng);
+                // Comprobar si la ubicación está dentro de los límites visibles del mapa
+                if (bounds.contains(position)) {
+                    const marker = new google.maps.Marker({
+                        position: position,
+                        map: map,
+                        title: location.name,
+                        icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }
+                    });
+
+                    const contentString = `<div class="p-2"><h4 class="font-bold text-md">${location.name}</h4><p class="text-sm text-gray-600">${location.address}</p><p class="text-sm text-gray-600">${location.phone}</p></div>`;
+                    marker.addListener("click", () => {
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
+                    });
+                    visibleMarkers.push(marker);
+                }
+            });
+            console.log(`Mostrando ${visibleMarkers.length} de ${allLocations.length} marcadores.`);
+        }
+
+
         function handleSearch(location) {
-            if (searchMarker) {
-                searchMarker.setMap(null);
-            }
+            if (searchMarker) searchMarker.setMap(null);
             searchMarker = new google.maps.Marker({
                 position: location,
                 map: map,
                 title: "Tu búsqueda",
                 icon: { url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }
             });
-
             map.panTo(location);
             map.setZoom(14);
-
-            // MODIFICADO: Guardar la ubicación para poder re-filtrar después
             lastSearchedLocation = location;
             findAndDisplayNearest(location);
         }
 
-        // MODIFICADO: Ahora filtra por radio antes de mostrar
+        // MODIFICADO: Ahora busca en `allLocations` en lugar de un array global genérico
         function findAndDisplayNearest(searchLatLng) {
-            // Obtener el radio del slider y convertirlo a metros
             const radiusInKm = document.getElementById('radius-slider').value;
             const radiusInMeters = radiusInKm * 1000;
 
-            const locationsWithDistance = locations.map(location => {
+            const locationsWithDistance = allLocations.map(location => {
                 const locationLatLng = new google.maps.LatLng(location.lat, location.lng);
                 const distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(searchLatLng, locationLatLng);
                 return { ...location, distance: distanceInMeters };
             });
 
-            // MODIFICADO: Filtrar por el radio seleccionado
             const nearbyLocations = locationsWithDistance.filter(location => location.distance <= radiusInMeters);
-
-            // Ordenar las sucursales filtradas por distancia
             nearbyLocations.sort((a, b) => a.distance - b.distance);
-
             displayResults(nearbyLocations);
         }
 
         function displayResults(sortedLocations) {
             const resultsContent = document.getElementById("results-content");
             resultsContent.innerHTML = "";
-
             if (sortedLocations.length === 0) {
                 resultsContent.innerHTML = "<p>No se encontraron sucursales en el radio seleccionado. Prueba aumentando la distancia.</p>";
                 return;
             }
-
             const list = document.createElement("ul");
             list.className = "space-y-4";
             sortedLocations.forEach(location => {
@@ -220,7 +194,8 @@
                     const position = { lat: location.lat, lng: location.lng };
                     map.panTo(position);
                     map.setZoom(15);
-                    const correspondingMarker = markers.find(m => m.getTitle() === location.name);
+                    // Buscar el marcador en el mapa y simular un clic
+                    const correspondingMarker = visibleMarkers.find(m => m.getTitle() === location.name);
                     if (correspondingMarker) {
                         google.maps.event.trigger(correspondingMarker, 'click');
                     }
@@ -235,3 +210,4 @@
 
 </body>
 </html>
+
