@@ -194,5 +194,40 @@
     "lat": -53.1365,
     "lng": -70.8841,
     "phone": "+56 61 229 1000"
+  },
+    {
+    "name": "Sucursal Central",
+    "address": "Av. Corrientes 1234, CABA",
+    "lat": -34.6037,
+    "lng": -58.3816,
+    "phone": "+54 11 4123-4567"
+  },
+  {
+    "name": "Sucursal Palermo",
+    "address": "Av. Santa Fe 3456, Palermo, CABA",
+    "lat": -34.5885,
+    "lng": -58.4113,
+    "phone": "+54 11 4825-8899"
+  },
+  {
+    "name": "Sucursal Belgrano",
+    "address": "Av. Cabildo 2000, Belgrano, CABA",
+    "lat": -34.5610,
+    "lng": -58.4573,
+    "phone": "+54 11 4788-1234"
+  },
+  {
+    "name": "Sucursal Caballito",
+    "address": "Av. Rivadavia 5000, Caballito, CABA",
+    "lat": -34.6179,
+    "lng": -58.4398,
+    "phone": "+54 11 4901-5678"
+  },
+  {
+    "name": "Sucursal San Isidro",
+    "address": "Av. del Libertador 15000, San Isidro, GBA",
+    "lat": -34.4842,
+    "lng": -58.5133,
+    "phone": "+54 11 4747-9900"
   }
 ]
