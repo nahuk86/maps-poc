@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de Ubicaciones Cercanas (Optimizado y Corregido)</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (CDN para desarrollo; en producción conviene compilar vía CLI o PostCSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -49,8 +49,7 @@
     </div>
 </div>
 
-<!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnrohr8YoLHfUDoFUUOpQ8Wb4W_n2Hirs&libraries=places,geometry&callback=initMap" async defer></script>
+<!-- Tu script con initMap y lógica completa -->
 <script>
     let map;
     let allLocations = [];
@@ -200,6 +199,17 @@
 
         container.appendChild(ul);
     }
+
+    // Exponer la función para el callback de Google Maps
+    window.initMap = initMap;
 </script>
+
+<!-- Carga optimizada de Google Maps -->
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnrohr8YoLHfUDoFUUOpQ8Wb4W_n2Hirs&libraries=places,geometry&callback=initMap"
+    defer
+    loading="lazy">
+</script>
+
 </body>
 </html>
