@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Ubicaciones Cercanas (Optimizado)</title>
+    <title>Mapa de Ubicaciones Cercanas (Optimizado y Corregido)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -49,21 +49,18 @@
         </div>
     </div>
 
-    <!-- ELIMINADO: Ya no se incrusta el JSON aquí -->
-
-    <!-- Script de Google Maps API -->
+    <!-- Script de Google Maps API (Recuerda reemplazar YOUR_API_KEY) -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnrohr8YoLHfUDoFUUOpQ8Wb4W_n2Hirs&libraries=places,geometry&callback=initMap" async defer></script>
 
     <script>
         let map;
-        let allLocations = []; // Contendrá TODAS las ubicaciones del JSON
-        let visibleMarkers = []; // Contendrá solo los marcadores visibles en el mapa
+        let allLocations = [];
+        let visibleMarkers = [];
         let searchMarker;
         let lastSearchedLocation;
         const infoWindow = new google.maps.InfoWindow();
 
-
-        // MODIFICADO: La función initMap ahora es asíncrona para usar await
+        // Inicia el mapa y los listeners de la UI
         async function initMap() {
             const initialCoords = { lat: -34.6037, lng: -58.3816 };
             map = new google.maps.Map(document.getElementById("map"), {
@@ -74,13 +71,36 @@
                 styles: [ { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] }, { elementType: "labels.icon", stylers: [{ visibility: "off" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] }, { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#eeeeee" }] }, { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }, { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] }, { featureType: "road.arterial", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] }, { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#dadada" }] }, { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] }, { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] }, { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] }, { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#eeeeee" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#c9c9c9" }] }, { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] }, ],
             });
             
-            // Cargar ubicaciones desde el archivo externo
+            // Carga las ubicaciones. Esta función ahora también se encarga de activar los listeners del mapa.
             await loadLocations();
 
-            // OPTIMIZACIÓN: Añadir un listener que se activa cuando el mapa deja de moverse
-            map.addListener('idle', updateVisibleMarkers);
+            // Configura los listeners de la interfaz de usuario
+            setupUIListeners();
+        }
 
-            // --- El resto de los listeners se mantienen igual ---
+        // Carga los datos y, una vez listos, activa la funcionalidad del mapa.
+        async function loadLocations() {
+            try {
+                const response = await fetch('locations.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allLocations = await response.json();
+                console.log(`${allLocations.length} ubicaciones cargadas.`);
+
+                // CORRECCIÓN: El listener se añade DESPUÉS de que 'allLocations' tiene datos.
+                map.addListener('idle', updateVisibleMarkers);
+
+                // Llama a la función una vez manualmente para dibujar los marcadores iniciales.
+                updateVisibleMarkers(); 
+                
+            } catch (error) {
+                console.error("No se pudieron cargar las ubicaciones:", error);
+            }
+        }
+        
+        // Agrupa los listeners de la UI para mantener initMap más limpio.
+        function setupUIListeners() {
             const searchInput = document.getElementById("search-input");
             const autocomplete = new google.maps.places.Autocomplete(searchInput, { types: ["geocode"], componentRestrictions: { country: "ar" } });
             autocomplete.addListener("place_changed", () => {
@@ -99,33 +119,16 @@
             });
         }
 
-        // MODIFICADO: Carga de datos con fetch
-        async function loadLocations() {
-            try {
-                const response = await fetch('locations.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                allLocations = await response.json();
-                console.log(`${allLocations.length} ubicaciones cargadas.`);
-            } catch (error) {
-                console.error("No se pudieron cargar las ubicaciones:", error);
-                // Opcional: Mostrar un mensaje de error al usuario en la UI
-            }
-        }
-
-        // NUEVO: Función de optimización para mostrar solo marcadores en el área visible
+        // Dibuja solo los marcadores que están dentro del área visible del mapa.
         function updateVisibleMarkers() {
-            // Limpiar marcadores antiguos
             visibleMarkers.forEach(marker => marker.setMap(null));
             visibleMarkers = [];
 
             const bounds = map.getBounds();
-            if (!bounds) return; // Salir si el mapa aún no está listo
+            if (!bounds) return;
 
             allLocations.forEach(location => {
                 const position = new google.maps.LatLng(location.lat, location.lng);
-                // Comprobar si la ubicación está dentro de los límites visibles del mapa
                 if (bounds.contains(position)) {
                     const marker = new google.maps.Marker({
                         position: position,
@@ -145,7 +148,7 @@
             console.log(`Mostrando ${visibleMarkers.length} de ${allLocations.length} marcadores.`);
         }
 
-
+        // Maneja la búsqueda de una nueva dirección.
         function handleSearch(location) {
             if (searchMarker) searchMarker.setMap(null);
             searchMarker = new google.maps.Marker({
@@ -160,7 +163,7 @@
             findAndDisplayNearest(location);
         }
 
-        // MODIFICADO: Ahora busca en `allLocations` en lugar de un array global genérico
+        // Encuentra y filtra las ubicaciones más cercanas según el radio.
         function findAndDisplayNearest(searchLatLng) {
             const radiusInKm = document.getElementById('radius-slider').value;
             const radiusInMeters = radiusInKm * 1000;
@@ -176,6 +179,7 @@
             displayResults(nearbyLocations);
         }
 
+        // Muestra la lista de resultados en el panel izquierdo.
         function displayResults(sortedLocations) {
             const resultsContent = document.getElementById("results-content");
             resultsContent.innerHTML = "";
@@ -194,7 +198,6 @@
                     const position = { lat: location.lat, lng: location.lng };
                     map.panTo(position);
                     map.setZoom(15);
-                    // Buscar el marcador en el mapa y simular un clic
                     const correspondingMarker = visibleMarkers.find(m => m.getTitle() === location.name);
                     if (correspondingMarker) {
                         google.maps.event.trigger(correspondingMarker, 'click');
@@ -205,9 +208,9 @@
             resultsContent.appendChild(list);
         }
 
+        // Asigna la función de inicialización a la ventana global para que el callback de la API la encuentre.
         window.initMap = initMap;
     </script>
 
 </body>
 </html>
-
